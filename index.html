@@ -9,12 +9,13 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link href="style.css" rel="stylesheet" />
   </head>
   <body>
     <div class="container mt-4">
-      <h1 class="mb-4">Bucks2Bar - Budget Tracker</h1>
+      <h1 class="mb-2">Bucks2Bar - Budget Tracker</h1>
+      <hr class="title-divider" />
 
-      <!-- Username Input Section 
       <form id="usernameForm" class="mb-4">
         <label for="username" class="form-label">Username</label>
         <input
@@ -22,55 +23,69 @@
           class="form-control"
           id="username"
           placeholder="Enter username"
-          pattern="(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':&quot;\\|,.<>\/?]).{5,}"
+          pattern="(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{5,}"
           title="Must contain at least 1 uppercase letter, 1 number, 1 special character, and be at least 5 characters long"
+          aria-describedby="usernameRequirements"
           required
         />
-        <div class="form-text">
+        <div
+          class="form-text text-danger d-none"
+          id="usernameRequirements"
+          aria-live="polite"
+        >
           Must contain at least 1 uppercase letter, 1 number, 1 special
           character, and be at least 5 characters long
         </div>
         <button
           type="submit"
-          class="btn btn-primary mt-2"
+          class="btn btn-pink mt-2"
           id="submitUsername"
-          style="background-color: #d63384; border-color: #d63384"
+          disabled
         >
           Submit
         </button>
+        <button
+          type="button"
+          class="btn btn-gray mt-2 ms-2"
+          id="clearUsername"
+        >
+          Clear
+        </button>
       </form>
--->
+
       <!-- Tab Navigation -->
-      <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link active"
-            id="data-tab"
-            data-bs-toggle="tab"
-            data-bs-target="#data"
-            type="button"
-            role="tab"
-            aria-controls="data"
-            aria-selected="true"
-          >
-            Data
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button
-            class="nav-link"
-            id="chart-tab"
-            data-bs-toggle="tab"
-            data-bs-target="#chart"
-            type="button"
-            role="tab"
-            aria-controls="chart"
-            aria-selected="false"
-          >
-            Chart
-          </button>
-        </li>
-      </ul>
+      <div class="d-flex align-items-stretch border-bottom">
+        <ul class="nav nav-tabs flex-grow-1 border-0" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="data-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#data"
+              type="button"
+              role="tab"
+              aria-controls="data"
+              aria-selected="true"
+            >
+              Data
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="chart-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#chart"
+              type="button"
+              role="tab"
+              aria-controls="chart"
+              aria-selected="false"
+            >
+              Chart
+            </button>
+          </li>
+        </ul>
+      </div>
 
       <!-- Tab Content -->
       <div class="tab-content" id="myTabContent">
@@ -81,12 +96,42 @@
           role="tabpanel"
           aria-labelledby="data-tab"
         >
+          <div class="d-flex justify-content-end align-items-center pt-3">
+            <label for="currencySelect" class="form-label small mb-0 me-2">
+              Currency
+            </label>
+            <div class="currency-search">
+              <input
+                type="search"
+                id="currencySelect"
+                class="form-control form-control-sm"
+                value="USD"
+                placeholder="Search currency"
+                aria-label="Search and select currency"
+                aria-autocomplete="list"
+                aria-controls="currencyOptions"
+                aria-expanded="false"
+                role="combobox"
+                autocomplete="off"
+              />
+              <div
+                id="currencyOptions"
+                class="currency-options d-none"
+                role="listbox"
+                aria-label="Currency options"
+              ></div>
+            </div>
+          </div>
           <div class="mt-4">
             <form id="budgetForm">
               <div class="row mb-3">
                 <div class="col-md-4"><strong>Month</strong></div>
-                <div class="col-md-4"><strong>Income ($)</strong></div>
-                <div class="col-md-4"><strong>Expenses ($)</strong></div>
+                <div class="col-md-4">
+                  <strong>Income (<span id="incomeCurrencyLabel">$</span>)</strong>
+                </div>
+                <div class="col-md-4">
+                  <strong>Expenses (<span id="expenseCurrencyLabel">$</span>)</strong>
+                </div>
               </div>
 
               <!-- January -->
@@ -425,8 +470,13 @@
         >
           <div class="mt-4">
             <!-- download button -->
-            <button id="downloadChart" class="btn btn-primary mb-3">
-              Download
+            <button
+              id="downloadChart"
+              class="btn btn-pink mb-3"
+              type="button"
+              aria-label="Download chart as PNG"
+            >
+              Download PNG
             </button>
             <canvas id="budgetChart"></canvas>
           </div>

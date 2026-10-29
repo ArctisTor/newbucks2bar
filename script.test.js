@@ -1,4 +1,12 @@
-const { handleUsernameSubmit } = require("./script.js");
+const {
+  handleUsernameSubmit,
+  isValidUsername,
+  updateUsernameSubmitState,
+  clearUsernameInput,
+  formatCurrency,
+  updateCurrencyDisplay,
+  initializeCurrencySearch,
+} = require("./script.js");
 
 describe("handleUsernameSubmit", () => {
   let usernameForm;
@@ -20,6 +28,182 @@ describe("handleUsernameSubmit", () => {
     mockEvent = {
       preventDefault: jest.fn(),
     };
+  });
+
+  describe("currency selection", () => {
+    beforeEach(() => {
+      document.body.innerHTML = `
+        <div class="currency-search">
+          <input id="currencySelect" value="USD" />
+          <div id="currencyOptions" class="d-none" role="listbox"></div>
+        </div>
+        <span id="incomeCurrencyLabel">$</span>
+        <span id="expenseCurrencyLabel">$</span>
+      `;
+    });
+
+    afterEach(() => {
+      document.body.innerHTML = "";
+    });
+
+    test("formats values using USD by default", () => {
+      expect(formatCurrency(1234.5)).toBe("$1,234.50");
+    });
+
+    test("updates both column labels and formatting when currency changes", () => {
+      const currencySelect = document.getElementById("currencySelect");
+      currencySelect.value = "EUR";
+
+      updateCurrencyDisplay();
+
+      expect(document.getElementById("incomeCurrencyLabel").textContent).toBe(
+        "€"
+      );
+      expect(document.getElementById("expenseCurrencyLabel").textContent).toBe(
+        "€"
+      );
+      expect(formatCurrency(1234.5)).toBe("€1,234.50");
+    });
+
+    test("ignores unsupported currency search text and returns to USD", () => {
+      const currencySelect = document.getElementById("currencySelect");
+      currencySelect.value = "not a currency";
+
+      expect(formatCurrency(1234.5)).toBe("$1,234.50");
+      updateCurrencyDisplay();
+
+      expect(currencySelect.value).toBe("USD");
+      expect(formatCurrency(1234.5)).toBe("$1,234.50");
+    });
+
+    test("shows filtered currency choices below the search field", () => {
+      initializeCurrencySearch();
+
+      const currencySelect = document.getElementById("currencySelect");
+      const currencyOptions = document.getElementById("currencyOptions");
+      expect(currencyOptions).toBe(currencySelect.nextElementSibling);
+
+      currencySelect.focus();
+      currencySelect.value = "Euro";
+      currencySelect.dispatchEvent(new Event("input", { bubbles: true }));
+
+      const options = currencyOptions.querySelectorAll(".currency-option");
+      expect(options).toHaveLength(1);
+      expect(options[0].dataset.currency).toBe("EUR");
+    });
+
+    test("selects a currency from the results dropdown", () => {
+      initializeCurrencySearch();
+      const currencySelect = document.getElementById("currencySelect");
+      currencySelect.value = "Euro";
+      currencySelect.dispatchEvent(new Event("input", { bubbles: true }));
+      document
+        .querySelector("#currencyOptions [data-currency='EUR']")
+        .click();
+
+      expect(currencySelect.value).toBe("EUR");
+      expect(document.getElementById("incomeCurrencyLabel").textContent).toBe(
+        "€"
+      );
+      expect(document.getElementById("expenseCurrencyLabel").textContent).toBe(
+        "€"
+      );
+      expect(
+        document.getElementById("currencyOptions").classList.contains("d-none")
+      ).toBe(true);
+    });
+  });
+
+  describe("username validation state", () => {
+    beforeEach(() => {
+      document.body.innerHTML = `
+        <form id="usernameForm">
+          <input type="text" id="username" />
+          <div id="usernameRequirements" class="d-none"></div>
+          <button id="submitUsername" disabled>Submit</button>
+        </form>
+      `;
+    });
+
+    afterEach(() => {
+      document.body.innerHTML = "";
+    });
+
+    test.each([
+      ["Valid1!", true],
+      ["Ab1@e", true],
+      ["valid1!", false],
+      ["Valid!", false],
+      ["Valid1", false],
+      ["Ab1!", false],
+    ])("validates %s as %s", (username, expected) => {
+      expect(isValidUsername(username)).toBe(expected);
+    });
+
+    test("enables submit only when the username is valid", () => {
+      const usernameInput = document.getElementById("username");
+      const submitButton = document.getElementById("submitUsername");
+
+      usernameInput.value = "Invalid1";
+      updateUsernameSubmitState();
+      expect(submitButton.disabled).toBe(true);
+
+      usernameInput.value = "Valid1!";
+      updateUsernameSubmitState();
+      expect(submitButton.disabled).toBe(false);
+
+      usernameInput.value = "invalid";
+      updateUsernameSubmitState();
+      expect(submitButton.disabled).toBe(true);
+    });
+
+    test("shows requirements only for non-empty invalid usernames", () => {
+      const usernameInput = document.getElementById("username");
+      const requirements = document.getElementById("usernameRequirements");
+
+      updateUsernameSubmitState();
+      expect(requirements.classList.contains("d-none")).toBe(true);
+
+      usernameInput.value = "invalid";
+      updateUsernameSubmitState();
+      expect(requirements.classList.contains("d-none")).toBe(false);
+
+      usernameInput.value = "Valid1!";
+      updateUsernameSubmitState();
+      expect(requirements.classList.contains("d-none")).toBe(true);
+    });
+
+    test("removes submission feedback when the username changes", () => {
+      const message = document.createElement("div");
+      message.id = "usernameMessage";
+      document.body.appendChild(message);
+
+      usernameInput.addEventListener("input", updateUsernameSubmitState);
+      usernameInput.value = "Another2@";
+      usernameInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+      expect(document.getElementById("usernameMessage")).toBeNull();
+    });
+
+    test("clears the username and resets validation state and feedback", () => {
+      const usernameInput = document.getElementById("username");
+      const submitButton = document.getElementById("submitUsername");
+      const requirements = document.getElementById("usernameRequirements");
+      const message = document.createElement("div");
+      message.id = "usernameMessage";
+      document.body.appendChild(message);
+
+      usernameInput.value = "Valid1!";
+      updateUsernameSubmitState();
+      expect(submitButton.disabled).toBe(false);
+
+      clearUsernameInput();
+
+      expect(usernameInput.value).toBe("");
+      expect(submitButton.disabled).toBe(true);
+      expect(requirements.classList.contains("d-none")).toBe(true);
+      expect(document.getElementById("usernameMessage")).toBeNull();
+    });
   });
 
   afterEach(() => {
@@ -119,6 +303,22 @@ describe("handleUsernameSubmit", () => {
     expect(message.id).toBe("usernameMessage");
     expect(message.classList.contains("alert")).toBe(true);
     expect(message.classList.contains("mt-3")).toBe(true);
+  });
+
+  test("should close the username message when its close button is clicked", () => {
+    usernameInput.value = "Valid1!";
+    handleUsernameSubmit(mockEvent);
+
+    const closeButton = document.querySelector(
+      "#usernameMessage .username-message-close"
+    );
+    expect(closeButton.getAttribute("aria-label")).toBe(
+      "Close username message"
+    );
+
+    closeButton.click();
+
+    expect(document.getElementById("usernameMessage")).toBeNull();
   });
 
   test("should accept various special characters", () => {

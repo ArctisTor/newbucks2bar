@@ -1,0 +1,154 @@
+#usernameForm .form-label {
+  font-weight: 700;
+}
+
+button:not(.nav-link):not(#downloadChart):not(.btn-gray):not(.username-message-close):not(.currency-option),
+.btn:not(#downloadChart):not(.btn-gray):not(.username-message-close):not(.currency-option),
+.pink-button,
+.nav-tabs .nav-link.active {
+  background-color: #d63384;
+  border-color: #d63384;
+  color: #ffffff;
+}
+
+button:not(.nav-link):not(#downloadChart):not(.btn-gray):not(.username-message-close):not(.currency-option):hover,
+.btn:not(#downloadChart):not(.btn-gray):not(.username-message-close):not(.currency-option):hover,
+.pink-button:hover,
+.nav-tabs .nav-link.active:hover {
+  background-color: #b02a6b;
+  border-color: #b02a6b;
+  color: #ffffff;
+}
+
+button:not(.nav-link):not(#downloadChart):not(.btn-gray):not(.username-message-close):not(.currency-option):focus-visible,
+.btn:not(#downloadChart):not(.btn-gray):not(.username-message-close):not(.currency-option):focus-visible,
+.pink-button:focus-visible,
+.nav-tabs .nav-link.active:focus-visible {
+  background-color: #b02a6b;
+  border-color: #b02a6b;
+  color: #ffffff;
+  box-shadow: 0 0 0 0.25rem rgb(214 51 132 / 25%);
+}
+
+button:not(.nav-link):not(#downloadChart):not(.btn-gray):not(.username-message-close):not(.currency-option):active,
+.btn:not(#downloadChart):not(.btn-gray):not(.username-message-close):not(.currency-option):active,
+.pink-button:active,
+.nav-tabs .nav-link.active:active {
+  background-color: #a52865;
+  border-color: #a52865;
+  color: #ffffff;
+}
+
+button.btn-gray,
+.btn.btn-gray {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #ffffff;
+}
+
+button.btn-gray:hover,
+.btn.btn-gray:hover,
+button.btn-gray:focus-visible,
+.btn.btn-gray:focus-visible,
+button.btn-gray:active,
+.btn.btn-gray:active {
+  background-color: #5c636a;
+  border-color: #5c636a;
+  color: #ffffff;
+}
+
+#downloadChart {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--bs-body-color);
+}
+
+#downloadChart:hover {
+  background-color: #d63384;
+  border-color: #d63384;
+  color: #ffffff;
+}
+
+.text-pink {
+  color: #d63384;
+}
+
+.bg-pink {
+  background-color: #d63384;
+}
+
+.border-pink {
+  border-color: #d63384;
+}
+
+.title-divider {
+  margin: 0 0 1.5rem;
+  border: 0;
+  border-top: 3px solid #0d6efd;
+  opacity: 1;
+}
+
+#usernameMessage {
+  padding-right: 2.5rem;
+}
+
+button.username-message-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  padding: 0.125rem 0.375rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+button.username-message-close:hover,
+button.username-message-close:focus-visible,
+button.username-message-close:active {
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+button.username-message-close:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.currency-search {
+  position: relative;
+  width: 11rem;
+}
+
+.currency-options {
+  position: absolute;
+  z-index: 1050;
+  top: 100%;
+  right: 0;
+  left: 0;
+  max-height: 16rem;
+  overflow-y: auto;
+  border: 1px solid #6c757d;
+  border-radius: 0.25rem;
+  background-color: #ffffff;
+  box-shadow: 0 0.25rem 0.5rem rgb(0 0 0 / 15%);
+}
+
+button.currency-option {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  border: 0;
+  background: #ffffff;
+  color: #6c757d;
+  text-align: left;
+}
+
+button.currency-option:hover,
+button.currency-option:focus-visible {
+  background: #0d6efd;
+  color: #ffffff;
+}
